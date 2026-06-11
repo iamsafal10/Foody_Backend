@@ -1,0 +1,13 @@
+const express = require("express");
+const app = express();
+const path = require("path");
+const cors = require("cors");
+const dbConnect = require("./connection");
+const PORT = 8001;
+const cookieParser = require("cookie-parser");
+require("dotenv").config();
+dbConnect();
+app.use(cors());
+app.use(cookieParser());
+app.use(express.json());
+app.listen(PORT, () => console.log(`Server started at ${PORT}`));
