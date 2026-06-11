@@ -3,7 +3,7 @@ const app = express();
 const path = require("path");
 const cors = require("cors");
 const dbConnect = require("./connection");
-const PORT = 8001;
+const PORT = 5000;
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 dbConnect();
