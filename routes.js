@@ -16,7 +16,7 @@ const {
 } = require("./controllers/user");
 const verifyToken = require("./middlewares/verifyToken");
 
-const router = require("express").router();
+const router = require("express").Router();
 
 // AUTH ROUTES
 router.post("/signup", handleUserSignUp);

@@ -22,5 +22,4 @@ function setUser(user) {
 
 module.exports = {
   setUser,
-  getUser,
 };
