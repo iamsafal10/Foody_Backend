@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
       ],
     },
     otp: {
-      tyep: Number,
+      type: Number,
       default: 0,
     },
   },

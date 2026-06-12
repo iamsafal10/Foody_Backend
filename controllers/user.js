@@ -31,8 +31,6 @@ async function handleUserSignUp(req, res) {
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
-
-  //   return res.redirect("/");
 }
 // USER LOGIN
 async function handleUserLogin(req, res) {
@@ -64,7 +62,6 @@ async function handleUserLogin(req, res) {
         success: true,
         message: "Login Successful!",
       });
-    // return res.redirect("/");
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
