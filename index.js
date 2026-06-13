@@ -4,7 +4,7 @@ const app = express();
 const path = require("path");
 const cors = require("cors");
 const dbConnect = require("./connection");
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 const cookieParser = require("cookie-parser");
 const routes = require("./routes");
 
@@ -15,6 +15,7 @@ app.use(
     credentials: true,
   })
 );
+console.log("CORS LOADED");
 app.use(cookieParser());
 app.use(express.json());
 app.use("/api", routes);
