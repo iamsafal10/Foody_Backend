@@ -11,7 +11,7 @@ const routes = require("./routes");
 dbConnect();
 app.use(
   cors({
-    origin: ["https://foody-wine-three.vercel.app/"],
+    origin: "https://foody-wine-three.vercel.app",
     credentials: true,
   })
 );
