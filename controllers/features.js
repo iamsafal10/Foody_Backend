@@ -182,11 +182,19 @@ async function handleDecrementQuantity(req, res) {
         message: "Food not found",
       });
     }
+
     food.quantity -= 1;
     food.totalPrice = food.price * food.quantity;
     if (food.quantity < 1) {
       await Food.findByIdAndDelete(id);
-
+      await User.findOneAndUpdate(
+        { _id: food.userId },
+        {
+          $pull: {
+            cartItems: food._id,
+          },
+        }
+      );
       return res.status(200).json({
         success: true,
         removed: true,
