@@ -28,3 +28,5 @@ const foodSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+const Food = mongoose.model("food", foodSchema);
+module.exports = Food;

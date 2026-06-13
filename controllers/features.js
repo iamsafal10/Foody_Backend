@@ -1,5 +1,5 @@
-const food = require("../models/food");
-const user = require("../models/user");
+const Food = require("../models/food");
+const User = require("../models/user");
 
 // ADD TO CART ROUTE
 async function handleAddToCart(req, res) {
@@ -9,7 +9,7 @@ async function handleAddToCart(req, res) {
   try {
     let existingItem = await Food.findOne({
       id,
-      userId: userId,
+      userId,
     });
 
     if (existingItem) {
@@ -25,7 +25,6 @@ async function handleAddToCart(req, res) {
           },
         },
         {
-          upsert: true,
           new: true,
         }
       );
@@ -39,7 +38,7 @@ async function handleAddToCart(req, res) {
 
       return res.status(200).json({
         success: true,
-        messgae: "Added to Cart!",
+        message: "Added to Cart!",
       });
     }
 
@@ -54,13 +53,11 @@ async function handleAddToCart(req, res) {
       totalPrice: price * quantity,
     });
 
-    const savedFood = await newFood.save();
-
     let user = await User.findOneAndUpdate(
       { _id: userId },
       {
         $push: {
-          cartItems: savedFood._id,
+          cartItems: newFood._id,
         },
       }
     );
@@ -121,6 +118,14 @@ async function handleRemoveFromCart(req, res) {
         message: "Food item not found!",
       });
     }
+    await User.findOneAndUpdate(
+      { _id: food.userId },
+      {
+        $pull: {
+          cartItems: food._id,
+        },
+      }
+    );
 
     return res.status(200).json({
       success: true,
@@ -138,33 +143,25 @@ async function handleIncrementQuantity(req, res) {
   const id = req.params.id;
 
   try {
-    let food = await Food.findOneAndUpdate(
-      { _id: id },
-      [
-        {
-          $set: {
-            quantity: {
-              $add: ["$quantity", 1],
-            },
-            totalPrice: {
-              $multiply: ["$price", { $add: ["$quantity", 1] }],
-            },
-          },
-        },
-      ],
-      {
-        upsert: true,
-        new: true,
-      }
-    );
+    const food = await Food.findById(id);
+
     if (!food) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Food not found!" });
+      return res.status(400).json({
+        success: false,
+        message: "Food not found",
+      });
     }
-    return res
-      .status(200)
-      .json({ success: true, message: "Food quantity incremented", food });
+
+    food.quantity += 1;
+    food.totalPrice = food.price * food.quantity;
+
+    await food.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Food quantity incremented",
+      food,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -177,32 +174,32 @@ async function handleDecrementQuantity(req, res) {
   const id = req.params.id;
 
   try {
-    let food = await Food.findOneAndUpdate(
-      { _id: id },
-      [
-        {
-          $set: {
-            quantity: {
-              $subtract: ["$quantity", 1],
-            },
-            totalPrice: { $subtract: ["$totalPrice", "$price"] },
-          },
-        },
-      ],
-      {
-        upsert: true,
-        new: true,
-      }
-    );
+    const food = await Food.findById(id);
+
     if (!food) {
       return res.status(400).json({
         success: false,
-        message: "Food not found or quantity already at minimum!",
+        message: "Food not found",
       });
     }
-    return res
-      .status(200)
-      .json({ success: true, message: "Food quantity incremented", food });
+    food.quantity -= 1;
+    food.totalPrice = food.price * food.quantity;
+    if (food.quantity < 1) {
+      await Food.findByIdAndDelete(id);
+
+      return res.status(200).json({
+        success: true,
+        removed: true,
+        message: "Food removed from cart",
+      });
+    }
+    await food.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Food quantity decremented",
+      food,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,

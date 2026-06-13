@@ -2,7 +2,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { setUser, getUser } = require("../services/auth");
+const { setUser } = require("../services/auth");
 const nodemailer = require("nodemailer");
 
 // USER SIGNUP
@@ -61,6 +61,7 @@ async function handleUserLogin(req, res) {
       .json({
         success: true,
         message: "Login Successful!",
+        user,
       });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
