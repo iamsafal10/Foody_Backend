@@ -54,8 +54,8 @@ async function handleUserLogin(req, res) {
     res
       .cookie("token", token, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
       })
       .status(200)
       .json({
